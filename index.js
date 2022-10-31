@@ -1,10 +1,8 @@
 class Ingredient {
-  constructor(name, price) {
+  constructor(name, quantity, price) {
     this.name = name;
+    this.quantity = quantity;
     this.price = price;
-  }
-  describe() {
-    return `${this.name} costs ${this.price} dollars.`;
   }
 }
 
@@ -12,18 +10,6 @@ class Recipe {
   constructor(name) {
     this.name = name;
     this.ingredients = [];
-  }
-  addIngredient(ingredient) {
-    if (ingredient instanceof Ingredient) {
-      this.ingredients.push(ingredient);
-    } else {
-      throw new Error(
-        `You can only add an instance of Ingredient.  Argument in not an ingredient: ${ingredient}`
-      );
-    }
-  }
-  describe() {
-    return `${this.name} has ${this.ingredients.length} ingredients.`;
   }
 }
 
@@ -66,7 +52,73 @@ class Menu {
             4) Display All Recipes
         `);
   }
-}
 
+  showRecipeMenuOptions(recipeInfo) {
+    return prompt(`
+        0) Back
+        1) Create Ingredient
+        2) Delete Ingredient
+        ------------------
+        ${recipeInfo}
+    `);
+  }
+  displayRecipes() {
+    let recipeString = '';
+    for (let i = 0; i < this.recipes.length; i++) {
+      recipeString += i + ')' + this.recipes[i].name + '\n';
+    }
+    alert(recipeString);
+  }
+  createRecipe() {
+    let name = prompt('Enter the name of a new recipe:');
+    this.recipes.push(new Recipe(name));
+  }
+  viewRecipe() {
+    let index = prompt('Enter the index of the recipe you wish to view:');
+    if (index > -1 && index < this.recipes.length) {
+      this.selectedRecipe = this.recipes[index];
+      let description = 'Recipe: ' + this.selectedRecipe.name + '\n';
+
+      for (let i = 0; i < this.selectedRecipe.ingredients.length; i++) {
+        description +=
+          i +
+          ') ' +
+          this.selectedRecipe.ingredients[i].quantity +
+          ' - ' +
+          this.selectedRecipe.ingredients[i].name +
+          ' | ' +
+          this.selectedRecipe.ingredients[i].price +
+          '\n';
+      }
+      let selection = this.showRecipeMenuOptions(description);
+      switch (selection) {
+        case '1':
+          this.createIngredient();
+          break;
+        case '2':
+          this.deleteIngredient();
+      }
+    }
+  }
+  deleteRecipe() {
+    let index = prompt('Enter the index of the recipie you wish to delete:');
+    if (index > -1 && index < this.recipes.length) {
+      this.recipes.splice(index, 1);
+    }
+  }
+  createIngredient() {
+    let name = prompt('Enter name of the new ingredient:');
+    let quantity = prompt('Enter the quanty of the ingredient:');
+    let price = prompt('Enter the price of the ingredient:');
+    this.selectedRecipe.ingredients.push(new Ingredient(name, quantity, price));
+  }
+
+  deleteIngredient() {
+    let index = prompt('Enter the index of the ingredient you wish to delete:');
+    if (index > -1 && index < this.selectedRecipe.ingredients.length) {
+      this.selectedRecipe.ingredients.splice(index, 1);
+    }
+  }
+}
 let menu = new Menu();
 menu.start();
